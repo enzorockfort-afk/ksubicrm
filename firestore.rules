@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Доступ только у владельца CRM.
+    // Тот же email, что в js/config.js → CRM_EMAIL.
+    function isOwner() {
+      return request.auth != null
+        && request.auth.token.email == "babaevdavid88@gmail.com";
+    }
+
+    // Сделки, склад, клиенты, задачи — читать и менять может только владелец
+    match /{document=**} {
+      allow read, write: if isOwner();
+    }
+  }
+}
